@@ -1,0 +1,70 @@
+# crear_db.py
+import sqlite3
+import os
+
+def crear_db_inicial():
+    """Crea la base de datos con datos iniciales"""
+    db_path = "maq.db"
+    
+    # Eliminar si existe
+    if os.path.exists(db_path):
+        os.remove(db_path)
+        print("Base de datos anterior eliminada")
+    
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    
+    # Crear tabla de energía
+    cursor.execute('''
+        CREATE TABLE energia (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            capacidad_energia REAL NOT NULL
+        )
+    ''')
+    
+    # Crear tabla de máquinas
+    cursor.execute('''
+        CREATE TABLE maquinas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            nombre TEXT NOT NULL,
+            energia REAL NOT NULL
+        )
+    ''')
+    
+    # Insertar generadores
+    generadores = [
+        ('Generador de Carbón', 75),
+        ('Generador de Fuel', 150),
+        ('Turbina de Gas', 200),
+        ('Turbina Nuclear', 2500),
+        ('Generador Eólico', 20),
+        ('Panel Solar', 10)
+    ]
+    cursor.executemany("INSERT INTO energia (nombre, capacidad_energia) VALUES (?, ?)", generadores)
+    
+    # Insertar máquinas
+    maquinas = [
+        ('Constructor', 4),
+        ('Ensamblador', 15),
+        ('Fabricante', 55),
+        ('Refinería', 30),
+        ('Fundición', 4),
+        ('Constructor de Paquetes', 30),
+        ('Constructor de Líneas de Producción', 110),
+        ('Trituradora', 30),
+        ('Minería', 5),
+        ('Bomba de Agua', 20),
+        ('Extractor de Petróleo', 40),
+        ('Horno Industrial', 10)
+    ]
+    cursor.executemany("INSERT INTO maquinas (nombre, energia) VALUES (?, ?)", maquinas)
+    
+    conn.commit()
+    conn.close()
+    print(f"✅ Base de datos creada en: {db_path}")
+    print(f"📊 {len(generadores)} generadores insertados")
+    print(f"⚙️  {len(maquinas)} máquinas insertadas")
+
+if __name__ == "__main__":
+    crear_db_inicial()
